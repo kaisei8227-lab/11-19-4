@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('イベント一覧')}"></head>
+<body>
+<header th:replace="~{fragments :: header}"></header>
+
+<main class="container">
+    <h1>イベント一覧</h1>
+    <div th:replace="~{fragments :: flash}"></div>
+
+    <p th:if="${#lists.isEmpty(events)}" class="empty">現在、配信中のイベントはありません。</p>
+
+    <!-- 掲示板：企業が作成したイベントが並ぶ -->
+    <ul class="board">
+        <li th:each="v : ${events}" class="board-item">
+            <div class="board-main">
+                <p class="board-company"><span class="host-label">主催</span><span th:text="${v.event.companyName}">〇〇株式会社</span></p>
+                <h2 class="board-title" th:text="${v.event.title}">就職説明会 A社</h2>
+                <p class="board-meta">
+                    開催 <span th:text="${#temporals.format(v.event.startAt, 'M月d日(E) HH:mm')}">12月10日 13:00</span>
+                    ・<span th:text="${v.event.location}">301 実習室</span>
+                    ・定員 <span th:text="${v.event.capacity}">30</span>名
+                </p>
+                <p class="board-desc" th:if="${v.event.description}" th:text="${v.event.description}">説明</p>
+                <p class="board-deadline" th:classappend="${v.event.closed} ? 'is-closed'">
+                    予約期限 <span th:text="${#temporals.format(v.event.deadline, 'M月d日(E) HH:mm')}">12月9日 18:00</span>
+                </p>
+            </div>
+
+            <div class="board-side">
+                <!-- 残り席数 -->
+                <span th:if="${v.event.closed}" class="seat seat-closed">受付終了</span>
+                <span th:if="${!v.event.closed and v.full}" class="seat seat-full">満席</span>
+                <span th:if="${!v.event.closed and !v.full}" class="seat"
+                      th:text="'残り ' + ${v.remaining} + '席'">残り 5席</span>
+
+                <!-- 予約ボタン → 個人情報入力ページへ -->
+                <!-- 企業アカウントには予約ボタンを出さない -->
+                <th:block th:unless="${loginUser.company}">
+                    <a th:if="${v.reservable}" th:href="@{/events/{id}/reserve(id=${v.event.id})}"
+                       class="btn">予約する</a>
+                    <span th:if="${v.reservedByMe}" class="btn btn-done">予約済み</span>
+                    <span th:if="${!v.reservable and !v.reservedByMe}" class="btn btn-disabled">予約不可</span>
+                </th:block>
+            </div>
+        </li>
+    </ul>
+</main>
+</body>
+</html>

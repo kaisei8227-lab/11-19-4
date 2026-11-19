@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('予約完了')}"></head>
+<body>
+<header th:replace="~{fragments :: header}"></header>
+
+<main class="container narrow">
+    <section class="card complete">
+        <div class="complete-mark">✓</div>
+        <h1>予約が完了しました</h1>
+        <p>当日は開始時刻までに会場へお越しください。</p>
+
+        <dl class="detail">
+            <dt>予約番号</dt>
+            <dd th:text="${reservation.id}">1</dd>
+            <dt>イベント</dt>
+            <dd th:text="${reservation.event.title}">就職説明会 A社</dd>
+            <dt>日時</dt>
+            <dd th:text="${#temporals.format(reservation.event.startAt, 'yyyy年M月d日(E) HH:mm')}">日時</dd>
+            <dt>会場</dt>
+            <dd th:text="${reservation.event.location}">会場</dd>
+            <dt>主催</dt>
+            <dd th:text="${reservation.event.companyName}">企業名</dd>
+            <dt>氏名</dt>
+            <dd th:text="${reservation.fullName} + '（' + ${reservation.fullNameKana} + '）'">山田 太郎</dd>
+            <dt>電話番号</dt>
+            <dd th:text="${reservation.phone}">090-1234-5678</dd>
+        </dl>
+
+        <a th:href="@{/events}" class="btn">イベント一覧に戻る</a>
+    </section>
+</main>
+</body>
+</html>
